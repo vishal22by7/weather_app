@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Check the current weather and 5-day forecast for any city with Weather Check.">
+    <meta name="author" content="Your Name">
+    <title>Weather Check</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.min.css">
+</head>
+<body class="{% if weather %}{{ weather.background }}{% else %}default-bg{% endif %}">
+    <div class="overlay"></div>
+    <header>
+        <div class="header-content">
+            <h1><a href="{{ url_for('home') }}">Weather Check</a></h1>
+        </div>
+    </header>
+    <main>
+        <form method="POST" id="weather-form">
+            <input type="text" name="city" placeholder="Enter city name" required>
+            <input type="submit" value="Get Weather">
+        </form>
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="error">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% if weather %}
+            <div class="weather-box">
+                <h3>{{ weather.city }}</h3>
+                <i class="wi {{ weather.icon }}"></i>
+                <p>Temperature: {{ weather.temperature }}°C</p>
+                <p>Weather: {{ weather.description|capitalize }}</p>
+                <p>Humidity: {{ weather.humidity }}%</p>
+                <p>Wind Speed: {{ weather.wind_speed }} m/s</p>
+                <p>Sunrise: {{ weather.sunrise }}</p>
+                <p>Sunset: {{ weather.sunset }}</p>
+            </div>
+            {% if forecast %}
+                <h2>5-Day Forecast</h2>
+                <div class="forecast-container">
+                    {% for day in forecast %}
+                        <div class="forecast-box">
+                            <h4>{{ day.day }}</h4>
+                            <i class="wi {{ day.icon }}"></i>
+                            <p>{{ day.temp }}°C</p>
+                            <p>{{ day.description|capitalize }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </main>
+    <footer>
+        <p>&copy; 2025 Weather Check. All rights reserved.</p>
+    </footer>
+    <script>
+        document.getElementById('weather-form').addEventListener('submit', function() {
+            document.getElementById('loading').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
